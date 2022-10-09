@@ -5,38 +5,9 @@ import {
   ApolloServerPluginLandingPageLocalDefault,
 } from 'apollo-server-core';
 import http from 'http';
-
-const books = [
-  {
-    title: 'The Awakening',
-    author: 'Kate Chopin',
-  },
-  {
-    title: 'City of Glass',
-    author: 'Paul Auster',
-  },
-];
-
-const typeDefs = gql`
-  type Book {
-    title: String
-    author: String
-  }
-
-  type Query {
-    books: [Book]
-  }
-`;
-
-const resolvers = {
-  Query: {
-    books: () => books,
-  },
-};
-
+import { typeDefs, resolvers } from './zip-service';
 
 async function startApolloServer(typeDefs: any, resolvers: any) {
-
   const app = express();
   const httpServer = http.createServer(app);
   const server = new ApolloServer({
@@ -48,16 +19,13 @@ async function startApolloServer(typeDefs: any, resolvers: any) {
       ApolloServerPluginDrainHttpServer({ httpServer }),
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
-    
   });
   await server.start();
   server.applyMiddleware({ app });
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: 4000 }, resolve)
   );
-  console.log(
-    `🚀 Server ready at http://localhost:4000${server.graphqlPath}`
-  );
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
 }
 
 startApolloServer(typeDefs, resolvers);
