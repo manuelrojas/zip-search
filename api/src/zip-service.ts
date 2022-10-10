@@ -3,8 +3,8 @@ import { gql } from 'apollo-server-express';
 const BASE_URL = 'http://api.zippopotam.us';
 
 
-const getZipInformation = async () => {
-  const result = await axios.get(`${BASE_URL}/us/90210`);
+const getZipInformation = async (country: string, postalCode: string) => {
+  const result = await axios.get(`${BASE_URL}/${country}/${postalCode}`);
   return result.data;
 };
 
@@ -24,21 +24,27 @@ export const typeDefs = gql`
     places: [Place]
   }
 
+  input ZipInputFilter {
+    country: String
+    postalCode: String
+  }
+
   type Query {
-    GetZipInfo: ZipCode
+    GetZipInfo(input: ZipInputFilter): ZipCode
   }
 `;
 
 export const resolvers = {
   Query: {
-    GetZipInfo: async () => {
-      const zipInfo = await getZipInformation();
+    GetZipInfo: async (args: { country: string; postalCode: string; }) => {
+      console.log('Args:', args?.country, args?.postalCode);
+      const zipInfo = await getZipInformation(args?.country, args?.postalCode);
       console.log('🚀 Raw Data:', zipInfo);
       return {
         ...zipInfo,
         postCode: zipInfo['post code'],
         countryAbbreviation: zipInfo['country abbreviation'],
-        places: zipInfo?.places.map((place: { [x: string]: any; }) => ({
+        places: zipInfo?.places.map((place: { [x: string]: any }) => ({
           ...place,
           placeName: place['place name'],
           stateAbbreviation: place['state abbreviation'],
