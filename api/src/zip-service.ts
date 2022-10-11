@@ -8,6 +8,13 @@ const getZipInformation = async (country: string, postalCode: string) => {
   return result.data;
 };
 
+type ZipInputType = {
+  input: {
+    country: string;
+    postalCode: string;
+  };
+};
+
 export const typeDefs = gql`
   type Place {
     placeName: String
@@ -36,9 +43,11 @@ export const typeDefs = gql`
 
 export const resolvers = {
   Query: {
-    GetZipInfo: async (args: { country: string; postalCode: string; }) => {
-      console.log('Args:', args?.country, args?.postalCode);
-      const zipInfo = await getZipInformation(args?.country, args?.postalCode);
+    GetZipInfo: async (_parent: any, { input }: ZipInputType) => {
+      const zipInfo = await getZipInformation(
+        input?.country,
+        input?.postalCode
+      );
       console.log('🚀 Raw Data:', zipInfo);
       return {
         ...zipInfo,
