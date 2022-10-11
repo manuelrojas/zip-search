@@ -8,14 +8,7 @@ import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
-
-type Place = {
-  placeName: string;
-  longitude: string;
-  state: string;
-  latitude: string;
-  stateAbbreviation: string;
-};
+import Places from './components/Places';
 
 const GET_ZIPINFO = gql`
   query ($input: ZipInputFilter!) {
@@ -49,24 +42,30 @@ function App() {
 
   return (
     <div className='App'>
-      <header className='App-header'>
-        <CountrySelect
-          onChange={(event: SyntheticEvent, newValue: CountryType | null) => {
-            console.log(event);
-            setCountry(newValue?.code || '');
-          }}
-        />
-        <TextField
-          onChange={(event) => {
-            setPostalCode(event.target.value);
-          }}
-          id='outlined-basic'
-          label='Zip Code'
-          variant='outlined'
-        />
+        <div style={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: '20px'
+        }}>
+          <CountrySelect
+            onChange={(event: SyntheticEvent, newValue: CountryType | null) => {
+              setCountry(newValue?.code || '');
+              setPostalCode(newValue?.zip || '');
+            }}
+          />
+          <TextField
+            onChange={(event) => {
+              setPostalCode(event.target.value);
+            }}
+            id='outlined-basic'
+            label='Zip Code'
+            variant='outlined'
+          />
+        </div>
+          
         {error && <span>Error: {error?.message}</span>}
         {loading && <CircularColor />}
-        <Box sx={{ minWidth: 275 }}>
+        {!loading && !error && <Box sx={{ minWidth: 275 }}>
           <Card>
             <Typography variant='h3' component='h3'>
               Zippopotam
@@ -81,29 +80,9 @@ function App() {
             <Typography color='text.secondary' gutterBottom>
               Postal Code: {data?.GetZipInfo.postCode}
             </Typography>
-            {data?.GetZipInfo?.places?.map((place: Place, index: string) => (
-              <div key={index}>
-                <Divider />
-                <Typography color='text.secondary' gutterBottom>
-                  Place Name: {place.placeName}
-                </Typography>
-                <Typography color='text.secondary' gutterBottom>
-                  State: {place.state}
-                </Typography>
-                <Typography color='text.secondary' gutterBottom>
-                  State Abbreviation: {place.stateAbbreviation}
-                </Typography>
-                <Typography color='text.secondary' gutterBottom>
-                  Longitude: {place.longitude}
-                </Typography>
-                <Typography color='text.secondary' gutterBottom>
-                  Latitude: {place.latitude}
-                </Typography>
-              </div>
-            ))}
+            <Places list={data?.GetZipInfo.places} />
           </Card>
-        </Box>
-      </header>
+        </Box>}
     </div>
   );
 }

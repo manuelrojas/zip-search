@@ -11,13 +11,14 @@ type CountrySelectProps = {
 export interface CountryType {
   code: string;
   label: string;
+  zip: string;
   suggested?: boolean;
 }
 
 const countries: readonly CountryType[] = [
-  { code: 'US', label: 'United States' },
-  { code: 'MX', label: 'Mexico' },
-  { code: 'AR', label: 'Argentina' },
+  { code: 'US', label: 'United States', zip: '00210' },
+  { code: 'MX', label: 'Mexico', zip: '01000' },
+  { code: 'AR', label: 'Argentina', zip: '1601' },
 ];
 
 export default function CountrySelect({ onChange }: CountrySelectProps) {
@@ -29,6 +30,7 @@ export default function CountrySelect({ onChange }: CountrySelectProps) {
       autoHighlight
       getOptionLabel={(option) => option.label}
       onChange={onChange}
+      defaultValue={countries[0]}
       renderOption={(props, option) => (
         <Box
           component='li'
@@ -51,7 +53,7 @@ export default function CountrySelect({ onChange }: CountrySelectProps) {
           label='Choose a country'
           inputProps={{
             ...params.inputProps,
-            autoComplete: '', // disable autocomplete and autofill
+            autoComplete: 'new-password', // disable autocomplete and autofill
           }}
         />
       )}
