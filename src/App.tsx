@@ -1,5 +1,6 @@
+import { SyntheticEvent, useState } from 'react';
 import './App.css';
-import CountrySelect from './components/CountrySelect';
+import CountrySelect, { CountryType } from './components/CountrySelect';
 import { useQuery, gql } from '@apollo/client';
 import CircularColor from './components/Loading';
 import Box from '@mui/material/Box';
@@ -14,7 +15,7 @@ type Place = {
   state: string;
   latitude: string;
   stateAbbreviation: string;
-}
+};
 
 const GET_ZIPINFO = gql`
   query ($input: ZipInputFilter!) {
@@ -31,25 +32,38 @@ const GET_ZIPINFO = gql`
       }
     }
   }
-`; 
-
+`;
 
 function App() {
+  const [country, setCountry] = useState<string | null>('us');
+  const [postalCode, setPostalCode] = useState<string | null>('90210');
+
   const { loading, error, data } = useQuery(GET_ZIPINFO, {
     variables: {
       input: {
-        country: 'mx',
-        postalCode: '01000',
+        country: country,
+        postalCode: postalCode,
       },
     },
   });
-  console.log(data?.GetZipInfo)
 
   return (
     <div className='App'>
       <header className='App-header'>
-        <CountrySelect />
-        <TextField id='outlined-basic' label='Zip Code' variant='outlined' />
+        <CountrySelect
+          onChange={(event: SyntheticEvent, newValue: CountryType | null) => {
+            console.log(event);
+            setCountry(newValue?.code || '');
+          }}
+        />
+        <TextField
+          onChange={(event) => {
+            setPostalCode(event.target.value);
+          }}
+          id='outlined-basic'
+          label='Zip Code'
+          variant='outlined'
+        />
         {error && <span>Error: {error?.message}</span>}
         {loading && <CircularColor />}
         <Box sx={{ minWidth: 275 }}>
@@ -67,8 +81,8 @@ function App() {
             <Typography color='text.secondary' gutterBottom>
               Postal Code: {data?.GetZipInfo.postCode}
             </Typography>
-            {data?.GetZipInfo?.places.map((place: Place) => (
-              <>
+            {data?.GetZipInfo?.places?.map((place: Place, index: string) => (
+              <div key={index}>
                 <Divider />
                 <Typography color='text.secondary' gutterBottom>
                   Place Name: {place.placeName}
@@ -85,7 +99,7 @@ function App() {
                 <Typography color='text.secondary' gutterBottom>
                   Latitude: {place.latitude}
                 </Typography>
-              </>
+              </div>
             ))}
           </Card>
         </Box>
