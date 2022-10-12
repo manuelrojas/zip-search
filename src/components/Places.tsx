@@ -13,10 +13,10 @@ type PlacesProps = {
    list: [Place]
 }
 
-export default function Places({ list }: PlacesProps) {
+export function Places({ list }: PlacesProps) {
     return (
       <>
-        {list.map((place: Place, index: number) => (
+        {list && list?.map((place: Place, index: number) => (
           <div key={index}>
             <Divider />
             <Typography color='text.secondary' gutterBottom>

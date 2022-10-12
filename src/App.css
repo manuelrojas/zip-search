@@ -13,7 +13,7 @@
   }
 }
 
-.App-header {
+.container {
   background-color: #fff;
   min-height: 100vh;
   display: flex;
@@ -23,6 +23,17 @@
   font-size: calc(10px + 2vmin);
   color: black;
 }
+
+
+
+.container-search {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+
 
 .App-link {
   color: #61dafb;

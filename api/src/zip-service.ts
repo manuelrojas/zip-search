@@ -48,12 +48,11 @@ export const resolvers = {
         input?.country,
         input?.postalCode
       );
-      console.log('🚀 Raw Data:', zipInfo);
       return {
         ...zipInfo,
         postCode: zipInfo['post code'],
         countryAbbreviation: zipInfo['country abbreviation'],
-        places: zipInfo?.places.map((place: { [x: string]: any }) => ({
+        places: zipInfo?.places?.map((place: { [x: string]: any }) => ({
           ...place,
           placeName: place['place name'],
           stateAbbreviation: place['state abbreviation'],
