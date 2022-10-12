@@ -9,7 +9,7 @@ import { RecentSearchs, SearchInput } from './components/RecentSearchs';
 import { CountryCard } from './components/CountryCard';
 import { Place } from './components/Places';
 
-const GET_ZIPINFO = gql`
+export const GET_ZIPINFO = gql`
   query ($input: ZipInputFilter!) {
     GetZipInfo(input: $input) {
       country
@@ -85,8 +85,8 @@ function App() {
         <RecentSearchs
           searchs={JSON.parse(localStorage.getItem('search') || '[]')}
           onClear={() => {
-            setClear(!clear);
-            searchs =  [];
+            setClear(!clear); 
+            searchs = [];
             localStorage.removeItem('search');
           }}
         />

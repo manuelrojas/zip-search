@@ -8,9 +8,9 @@ export type SearchInput = {
   postalCode: string | null;
 };
 
-type RecentSearchsProps = {
+export type RecentSearchsProps = {
   searchs: [SearchInput] | [];
-  onClear: () => void
+  onClear?: () => void
 };
 
 export function RecentSearchs({ searchs, onClear }: RecentSearchsProps) {
@@ -21,13 +21,13 @@ export function RecentSearchs({ searchs, onClear }: RecentSearchsProps) {
       )}
       {searchs?.length > 0 && (
         <Box>
-          {searchs?.slice(-5).map((item: SearchInput) => (
-            <>
+          {searchs?.slice(-5).map((item: SearchInput, index: number) => (
+            <Box key={index}>
               <Alert severity='info'>
                 Country: {item?.country?.toUpperCase()}, Postal Code:{' '}
                 {item?.postalCode}
               </Alert>
-            </>
+            </Box>
           ))}
           <Button
             onClick={onClear}
