@@ -1,4 +1,4 @@
-# QUERY
+# Query
 ```
 query ($input: ZipInputFilter!) {
     GetZipInfo (input: $input) {
@@ -18,6 +18,7 @@ query ($input: ZipInputFilter!) {
 
 # GRAPHQL VARIABLES
 
+```
 {
     "input": {
         "country": "mx",
