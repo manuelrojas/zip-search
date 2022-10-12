@@ -22,9 +22,12 @@ Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 
-## API (cd && /api)
+## API (cd api)
 
 ### `npm install`
 
 ### `npm start`
+
+<img width="1277" alt="image" src="https://user-images.githubusercontent.com/3438705/195257797-0c55ccc9-4475-4fd4-aa2c-7b3c3952cbe0.png">
+
 
