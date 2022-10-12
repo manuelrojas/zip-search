@@ -1,22 +1,15 @@
+import { SyntheticEvent, useState } from 'react';
 import './App.css';
-import CountrySelect from './components/CountrySelect';
+import CountrySelect, { CountryType } from './components/CountrySelect';
 import { useQuery, gql } from '@apollo/client';
 import CircularColor from './components/Loading';
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
+import { RecentSearchs, SearchInput } from './components/RecentSearchs';
+import { CountryCard } from './components/CountryCard';
+import { Place } from './components/Places';
 
-type Place = {
-  placeName: string;
-  longitude: string;
-  state: string;
-  latitude: string;
-  stateAbbreviation: string;
-}
-
-const GET_ZIPINFO = gql`
+export const GET_ZIPINFO = gql`
   query ($input: ZipInputFilter!) {
     GetZipInfo(input: $input) {
       country
@@ -31,66 +24,75 @@ const GET_ZIPINFO = gql`
       }
     }
   }
-`; 
+`;
 
+let searchs: SearchInput[] = JSON.parse(
+  localStorage.getItem('search') || '[]'
+);
 
 function App() {
+  const [country, setCountry] = useState<string | null>('us');
+  const [postalCode, setPostalCode] = useState<string | null>('90210');
+  const [clear, setClear] = useState(false);
+  
   const { loading, error, data } = useQuery(GET_ZIPINFO, {
     variables: {
       input: {
-        country: 'mx',
-        postalCode: '01000',
+        country: country || 'us',
+        postalCode: postalCode || '90210',
       },
     },
   });
-  console.log(data?.GetZipInfo)
+
+  const saveRecentSearchs = () => {
+    searchs.push({
+      country ,
+      postalCode,
+    });
+    localStorage.setItem('search', JSON.stringify(searchs));
+  }
+
+  const ZipInfo = {
+      country: data?.GetZipInfo?.country as string,
+      postalCode: data?.GetZipInfo?.postalCode as string,
+      countryAbbreviation: data?.GetZipInfo?.countryAbbreviation as string,
+      places: data?.GetZipInfo?.places as [Place],
+  };
 
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <CountrySelect />
-        <TextField id='outlined-basic' label='Zip Code' variant='outlined' />
+    <Box className='App'>
+      <Box className='container'>
+        <Box className='container-search'>
+          <CountrySelect
+            onChange={(event: SyntheticEvent, newValue: CountryType | null) => {
+              setCountry(newValue?.code || '');
+              setPostalCode(newValue?.zip || '');
+              saveRecentSearchs();
+            }}
+          />
+          <TextField
+            onChange={(event) => {
+              setPostalCode(event.target.value);
+              saveRecentSearchs();
+            }}
+            id='outlined-basic'
+            label='Zip Code'
+            variant='outlined'
+          />
+        </Box>
         {error && <span>Error: {error?.message}</span>}
         {loading && <CircularColor />}
-        <Box sx={{ minWidth: 275 }}>
-          <Card>
-            <Typography variant='h3' component='h3'>
-              Zippopotam
-            </Typography>
-            <Divider />
-            <Typography color='text.secondary' gutterBottom>
-              Country: {data?.GetZipInfo.country}
-            </Typography>
-            <Typography color='text.secondary' gutterBottom>
-              Country Abbreviation: {data?.GetZipInfo.countryAbbreviation}
-            </Typography>
-            <Typography color='text.secondary' gutterBottom>
-              Postal Code: {data?.GetZipInfo.postCode}
-            </Typography>
-            {data?.GetZipInfo?.places.map((place: Place) => (
-              <>
-                <Divider />
-                <Typography color='text.secondary' gutterBottom>
-                  Place Name: {place.placeName}
-                </Typography>
-                <Typography color='text.secondary' gutterBottom>
-                  State: {place.state}
-                </Typography>
-                <Typography color='text.secondary' gutterBottom>
-                  State Abbreviation: {place.stateAbbreviation}
-                </Typography>
-                <Typography color='text.secondary' gutterBottom>
-                  Longitude: {place.longitude}
-                </Typography>
-                <Typography color='text.secondary' gutterBottom>
-                  Latitude: {place.latitude}
-                </Typography>
-              </>
-            ))}
-          </Card>
-        </Box>
-      </header>
-    </div>
+        <RecentSearchs
+          searchs={JSON.parse(localStorage.getItem('search') || '[]')}
+          onClear={() => {
+            setClear(!clear); 
+            searchs = [];
+            localStorage.removeItem('search');
+          }}
+        />
+        {!loading && !error && <CountryCard data={ZipInfo} />}
+      </Box>
+    </Box>
   );
 }
 

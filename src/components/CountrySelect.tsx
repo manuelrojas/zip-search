@@ -1,8 +1,27 @@
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import { SyntheticEvent } from 'react';
 
-export default function CountrySelect() {
+ 
+type CountrySelectProps = {
+  onChange: (event: SyntheticEvent, value: CountryType | null) => void;
+};  
+
+export interface CountryType {
+  code: string;
+  label: string;
+  zip: string;
+  suggested?: boolean;
+}
+
+const countries: readonly CountryType[] = [
+  { code: 'US', label: 'United States', zip: '00210' },
+  { code: 'MX', label: 'Mexico', zip: '01000' },
+  { code: 'AR', label: 'Argentina', zip: '1601' },
+];
+
+export default function CountrySelect({ onChange }: CountrySelectProps) {
   return (
     <Autocomplete
       id='country-select-demo'
@@ -10,6 +29,8 @@ export default function CountrySelect() {
       options={countries}
       autoHighlight
       getOptionLabel={(option) => option.label}
+      onChange={onChange}
+      defaultValue={countries[0]}
       renderOption={(props, option) => (
         <Box
           component='li'
@@ -23,7 +44,7 @@ export default function CountrySelect() {
             srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
             alt=''
           />
-          {option.label} - Postal Code: {option.zip}
+          {option.label}
         </Box>
       )}
       renderInput={(params) => (
@@ -40,15 +61,4 @@ export default function CountrySelect() {
   );
 }
 
-interface CountryType {
-  code: string;
-  label: string;
-  zip: string;
-  suggested?: boolean;
-}
 
-const countries: readonly CountryType[] = [
-  { code: 'US', label: 'United States', zip: '00210' },
-  { code: 'MX', label: 'Mexico', zip: '01000' },
-  { code: 'AR', label: 'Argentina', zip: '1601' },
-];
